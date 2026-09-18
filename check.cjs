@@ -67,4 +67,86 @@ const html=fs.readFileSync('index.html','utf8');
 for(const [,ref] of html.matchAll(/(?:src|href)="([^"]+)"/g)){if(!ref.startsWith('http')&&!ref.startsWith('#'))assert(fs.existsSync(ref),'Missing asset '+ref)}
 assert(!html.includes('23000'));assert(!html.includes('promo4.jpg'));
 assert(html.match(/<section class="hero"[\s\S]*?burger_hand.jpg[\s\S]*?<\/section>/));
-console.log('PASS: 57 miniatures with unique cells and valid assets; real hero photo preserved; 155 variants, cart totals, WhatsApp encoding, search and ingredient control.');
+// Defensive boundary tests: malformed data and corrupt state must not throw.
+context.candidateCatalog=JSON.parse(JSON.stringify(menuProducts));
+assert.equal(vm.runInContext('validateCatalog(candidateCatalog).length',context),57);
+for(const patch of [
+ {id:'bad:id'}, {id:''}, {name:''}, {name:null}, {category:'unknown'},
+ {variants:null}, {variants:[]}, {variants:[{label:'',price:1}]},
+ {variants:[{label:'x',price:0}]}, {variants:[{label:'x',price:-1}]},
+ {variants:[{label:'x',price:1.5}]}, {variants:[{label:'x',price:Infinity}]},
+ {variants:[{label:'x',price:NaN}]}, {variants:[{label:'x',price:'100'}]},
+ {variants:[{label:'x',price:Number.MAX_SAFE_INTEGER+1}]},
+ {variants:new Array(2)}, {description:{}}, {included:42},
+]){
+ context.candidateCatalog=[{...menuProducts[0],...patch}];
+ assert.equal(vm.runInContext('validateCatalog(candidateCatalog).length',context),0);
+}
+context.candidateCatalog=[menuProducts[0],menuProducts[0]];
+assert.equal(vm.runInContext('validateCatalog(candidateCatalog).length',context),1);
+assert.equal(vm.runInContext('validateCatalog(null).length',context),0);
+vm.runInContext('cart.clear();selections.clear()',context);
+for(const value of [-1,2,NaN,Infinity,1.5,'',' ','-1','01','1e0',null,{},Symbol('bad'),1n]){
+ context.invalidValue=value;
+ assert.equal(vm.runInContext("addProduct('b-66',invalidValue)",context),false);
+}
+assert.equal(vm.runInContext("addProduct('missing',0)",context),false);
+assert.equal(vm.runInContext('cart.size',context),0);
+for(const qty of [0,-1,NaN,Infinity,1.5,'1',{},Symbol('bad'),1n,Number.MAX_SAFE_INTEGER]){
+ context.invalidValue=qty;
+ vm.runInContext("cart.set('b-66:0',invalidValue);renderCart()",context);
+ assert.equal(vm.runInContext('cart.size',context),0);
+ assert.equal(element('#subtotal').textContent,'$0');
+}
+for(const key of ['missing:0','b-66:-1','b-66:2','b-66:01','b-66:0:0','b-66:NaN','b-66:Infinity',{},null]){
+ context.invalidValue=key;
+ vm.runInContext('cart.set(invalidValue,1);renderCart()',context);
+ assert.equal(vm.runInContext('cart.size',context),0);
+}
+vm.runInContext("addProduct('b-66',0)",context);
+assert.equal(vm.runInContext("setQuantity('b-66:0',Number.MAX_SAFE_INTEGER)",context),false);
+assert.equal(vm.runInContext("changeQuantity('b-66:0','99')",context),false);
+assert.equal(vm.runInContext("changeQuantity('b-66:0',1)",context),true);
+assert.equal(element('#subtotal').textContent,'$10.600');
+vm.runInContext("changeQuantity('b-66:0',-1);changeQuantity('b-66:0',-1)",context);
+assert.equal(element('#checkout')['aria-disabled'],'true');
+for(const value of ['-1','2','NaN','Infinity','', '1.5']){
+ events.get('change')({target:{matches:()=>true,dataset:{variant:'b-66'},value}});
+ assert.equal(vm.runInContext("selections.has('b-66')",context),false);
+}
+events.get('change')({target:{matches:()=>true,dataset:{variant:'missing'},value:'0'}});
+element('#search').value='';
+vm.runInContext("selections.set('b-66',Infinity);renderProducts()",context);
+assert.equal(vm.runInContext("selections.has('b-66')",context),false);
+vm.runInContext('setSpread(50)',context);
+for(const value of [NaN,Infinity,-Infinity,'bad','',null,{},Symbol('bad')]){
+ context.invalidValue=value;
+ assert.equal(vm.runInContext('setSpread(invalidValue)',context),false);
+ assert.equal(element('#assembly').value,50);
+}
+vm.runInContext('setSpread(-10)',context);assert.equal(element('#assembly').value,0);
+vm.runInContext('setSpread(110)',context);assert.equal(element('#assembly').value,100);
+element('#notes').value='x'.repeat(501);
+vm.runInContext("addProduct('b-66',0)",context);
+assert(decodeURIComponent(element('#checkout').href).includes('x'.repeat(500)));
+assert(!decodeURIComponent(element('#checkout').href).includes('x'.repeat(501)));
+element('#notes').value='Sin cebolla & <img src=x onerror=alert(1)> 😀\uD800';
+vm.runInContext('updateCheckout()',context);
+const url=new URL(element('#checkout').href);
+assert.equal(url.origin,'https://wa.me');assert.equal(url.pathname,'/56963978232');
+assert.equal([...url.searchParams.keys()].join(','),'text');
+assert(url.searchParams.get('text').includes('😀�'));
+
+// Catalog text is treated as text even if a future editing source inserts markup.
+const payload='<img src=x onerror="alert(1)"> & \'quoted\'';
+const hostile={...menuProducts[0],name:payload,description:payload,included:payload,variants:[{label:payload,price:7200},{label:'Doble',price:9600}]};
+const hostileContext={...context,menuProducts:[hostile]};
+vm.createContext(hostileContext);element('#search').value='';
+vm.runInContext(fs.readFileSync('app.js','utf8'),hostileContext);
+vm.runInContext("addProduct('b-5',0)",hostileContext);
+for(const id of ['#products','#cart-items']){
+ const markup=element(id).innerHTML;
+ assert(!markup.includes('<img src=x'));
+ assert(markup.includes('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;'));
+}
+console.log('PASS: 57 products / 155 variants, existing functional checks, catalog validation, invalid indices/keys/quantities, safe totals, notes, slider and escaped catalog HTML.');

@@ -1,5 +1,11 @@
 # Ruta Central — despliegue seguro, Fase 1
 
+> Actualización 18-09-2026: el usuario confirmó las verificaciones públicas
+> satisfactorias de Fase 1. Se preparó localmente la Fase 2, documentada en
+> `SECURITY-PHASE2.md`, pendiente de su despliegue. Los resultados del día 17
+> que siguen son el registro histórico anterior al despliegue de Fase 1.
+> `check-live.cjs` ahora comprueba también las cabeceras de Fase 2.
+
 ## Estado
 
 Implementación local preparada y probada. Todavía no desplegada desde esta tarea.
