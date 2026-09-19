@@ -39,18 +39,78 @@ const descriptions={burger:'Todas las hamburguesas incluyen papas fritas. Elige 
 const dialog=document.querySelector('#cart');
 let currentFilter='burger',toastTimer;
 const miniSheets={burger:'mini-hamburguesas',sandwich:'mini-sandwiches',hotdog:'mini-completos',share:'mini-compartir',drink:'mini-bebidas'};
-const miniIndex=new Map();
-Object.keys(miniSheets).forEach(category=>products.filter(p=>p.category===category).forEach((p,index)=>miniIndex.set(p.id,index)));
+// Stable sprite coordinates, keyed by commercial product ID.
+const thumbnailMap=Object.freeze({
+ "b-5": Object.freeze({category:"burger",column:0,row:0}),
+ "b-aleman": Object.freeze({category:"burger",column:1,row:0}),
+ "b-italiano": Object.freeze({category:"burger",column:2,row:0}),
+ "b-dinamico": Object.freeze({category:"burger",column:0,row:1}),
+ "b-77": Object.freeze({category:"burger",column:1,row:1}),
+ "b-66": Object.freeze({category:"burger",column:2,row:1}),
+ "b-libertadores": Object.freeze({category:"burger",column:0,row:2}),
+ "b-68": Object.freeze({category:"burger",column:1,row:2}),
+ "b-central": Object.freeze({category:"burger",column:2,row:2}),
+ "b-norte": Object.freeze({category:"burger",column:0,row:3}),
+ "b-sur": Object.freeze({category:"burger",column:1,row:3}),
+ "b-79": Object.freeze({category:"burger",column:2,row:3}),
+ "b-88": Object.freeze({category:"burger",column:0,row:4}),
+ "b-azteca": Object.freeze({category:"burger",column:1,row:4}),
+ "s-solo": Object.freeze({category:"sandwich",column:0,row:0}),
+ "s-italiano": Object.freeze({category:"sandwich",column:1,row:0}),
+ "s-completo": Object.freeze({category:"sandwich",column:2,row:0}),
+ "s-aleman": Object.freeze({category:"sandwich",column:0,row:1}),
+ "s-dinamico": Object.freeze({category:"sandwich",column:1,row:1}),
+ "s-chacarero": Object.freeze({category:"sandwich",column:2,row:1}),
+ "s-tomate": Object.freeze({category:"sandwich",column:0,row:2}),
+ "s-palta": Object.freeze({category:"sandwich",column:1,row:2}),
+ "s-brasileno": Object.freeze({category:"sandwich",column:2,row:2}),
+ "s-barros": Object.freeze({category:"sandwich",column:0,row:3}),
+ "s-rodeo": Object.freeze({category:"sandwich",column:1,row:3}),
+ "s-pobre": Object.freeze({category:"sandwich",column:2,row:3}),
+ "s-antigua": Object.freeze({category:"sandwich",column:0,row:4}),
+ "s-campesino": Object.freeze({category:"sandwich",column:1,row:4}),
+ "h-solo": Object.freeze({category:"hotdog",column:0,row:0}),
+ "h-italiano": Object.freeze({category:"hotdog",column:1,row:0}),
+ "h-completo": Object.freeze({category:"hotdog",column:2,row:0}),
+ "h-aleman": Object.freeze({category:"hotdog",column:0,row:1}),
+ "h-dinamico": Object.freeze({category:"hotdog",column:1,row:1}),
+ "h-chacarero": Object.freeze({category:"hotdog",column:2,row:1}),
+ "h-tomate": Object.freeze({category:"hotdog",column:0,row:2}),
+ "h-palta": Object.freeze({category:"hotdog",column:1,row:2}),
+ "h-brasileno": Object.freeze({category:"hotdog",column:2,row:2}),
+ "h-barros": Object.freeze({category:"hotdog",column:0,row:3}),
+ "h-rodeo": Object.freeze({category:"hotdog",column:1,row:3}),
+ "h-pobre": Object.freeze({category:"hotdog",column:2,row:3}),
+ "h-antigua": Object.freeze({category:"hotdog",column:0,row:4}),
+ "h-campesino": Object.freeze({category:"hotdog",column:1,row:4}),
+ "ch-0": Object.freeze({category:"share",column:0,row:0}),
+ "ch-1": Object.freeze({category:"share",column:1,row:0}),
+ "ch-2": Object.freeze({category:"share",column:2,row:0}),
+ "papas": Object.freeze({category:"share",column:0,row:1}),
+ "salchipapas": Object.freeze({category:"share",column:1,row:1}),
+ "cheddar": Object.freeze({category:"share",column:2,row:1}),
+ "supremas": Object.freeze({category:"share",column:0,row:2}),
+ "aros": Object.freeze({category:"share",column:1,row:2}),
+ "nuggets": Object.freeze({category:"share",column:2,row:2}),
+ "empanadas": Object.freeze({category:"share",column:0,row:3}),
+ "mix": Object.freeze({category:"share",column:1,row:3}),
+ "lata": Object.freeze({category:"drink",column:0,row:0}),
+ "bebida": Object.freeze({category:"drink",column:1,row:0}),
+ "agua": Object.freeze({category:"drink",column:0,row:1}),
+ "jumex": Object.freeze({category:"drink",column:1,row:1})
+});
 function productThumbnail(p){
  if(p.id==='b-66')return `<a class="burger-mini-link" href="#ingredientes" aria-label="Explorar los ingredientes de la Ruta 66"><span class="burger-mini" aria-hidden="true">${[0,1,2,3,4].map(i=>`<span class="mini-layer mini-layer-${i}"></span>`).join('')}<span class="mini-shine"></span></span><span>Descúbrela por dentro ↗<small>Imagen ilustrativa</small></span></a>`;
- const columns=p.category==='drink'?2:3,rows=p.category==='drink'?2:5,index=miniIndex.get(p.id);
- const row=Math.floor(index/columns);
+ const position=thumbnailMap[p.id];
+ if(!position||position.category!==p.category)return '';
+ const columns=p.category==='drink'?2:3,rows=p.category==='drink'?2:5;
+ const {row,column}=position;
  const boundaries={burger:[0,325,642,950,1245,1619],sandwich:[0,320,630,942,1238,1619],hotdog:[0,325,640,950,1250,1619]}[p.category];
  const cellHeight=boundaries?boundaries[row+1]-boundaries[row]:1;
  const backgroundHeight=boundaries?1619/cellHeight*100:rows*100;
  const backgroundY=boundaries?boundaries[row]/(1619-cellHeight)*100:row/(rows-1)*100;
  const caption={burger:'Referencia simple',sandwich:'Referencia con churrasco',hotdog:'Referencia con vienesa',share:'Presentación referencial',drink:'Envase referencial'}[p.category];
- return `<div class="menu-mini-wrap"><button type="button" class="menu-mini-control" data-mini="${p.id}" aria-label="Ampliar miniatura ilustrativa de ${escapeHTML(p.name)}" aria-pressed="false"><span class="menu-mini-image" aria-hidden="true" style="background-image:url('assets/${miniSheets[p.category]}.webp');background-size:${columns*100}% ${backgroundHeight}%;background-position:${index%columns/(columns-1)*100}% ${backgroundY}%"></span><span class="mini-shine" aria-hidden="true"></span></button><span class="mini-caption">${caption}<small>Imagen ilustrativa</small></span></div>`;
+ return `<div class="menu-mini-wrap"><button type="button" class="menu-mini-control" data-mini="${p.id}" aria-label="Ampliar miniatura ilustrativa de ${escapeHTML(p.name)}" aria-pressed="false"><span class="menu-mini-image" aria-hidden="true" style="background-image:url('assets/${miniSheets[p.category]}.webp');background-size:${columns*100}% ${backgroundHeight}%;background-position:${column/(columns-1)*100}% ${backgroundY}%"></span><span class="mini-shine" aria-hidden="true"></span></button><span class="mini-caption">${caption}<small>Imagen ilustrativa</small></span></div>`;
 }
 function productVariants(p,choice){
  if(p.variants.length<2)return '';
@@ -66,7 +126,7 @@ function renderProducts(){
  document.querySelector('#result-count').textContent=list.length+(list.length===1?' opción':' opciones');
  document.querySelector('#products').innerHTML=list.length?list.map((p,index)=>{
  const choice=selectedIndex(p),v=p.variants[choice];
- return `<article class="product" style="--order:${Math.min(index,8)}"><span class="route-number" aria-hidden="true">${escapeHTML(p.category==='burger'?p.name.replace('Ruta ','').slice(0,3).toUpperCase():String(index+1).padStart(2,'0'))}</span><div class="product-body"><small class="product-category">${categoryNames[p.category]}</small><h3>${escapeHTML(p.name)}</h3>${productThumbnail(p)}${p.description?`<p>${escapeHTML(p.description)}</p>`:''}${p.included?`<span class="included">${escapeHTML(p.included)}</span>`:''}${productVariants(p,choice)}<div class="product-bottom"><strong id="price-${p.id}" aria-live="polite" aria-atomic="true">${money(v.price)}</strong><button class="add-button" data-add="${p.id}" aria-label="Agregar ${escapeHTML(p.name)} al pedido">+ <span>Agregar</span></button></div></div></article>`;
+ return `<article class="product" style="--order:${Math.min(index,8)}"><span class="route-number" aria-hidden="true">${escapeHTML(p.category==='burger'?p.name.replace('Ruta ','').slice(0,3).toUpperCase():String(index+1).padStart(2,'0'))}</span><div class="product-body"><small class="product-category">${categoryNames[p.category]}</small><h3>${escapeHTML(p.name)}</h3>${productThumbnail(p)}${p.description?`<p>${escapeHTML(p.description)}</p>`:''}${p.included?`<span class="included">${escapeHTML(p.included)}</span>`:''}<div class="product-purchase">${productVariants(p,choice)}<div class="product-bottom"><strong id="price-${p.id}" aria-live="polite" aria-atomic="true">${money(v.price)}</strong><button class="add-button" data-add="${p.id}" aria-label="Agregar ${escapeHTML(p.name)} al pedido">+ <span>Agregar</span></button></div></div></div></article>`;
  }).join(''):'<p class="empty">No encontramos ese antojo en esta categoría. Prueba con otro nombre o selecciona «Todo».</p>';
 }
 function orderRows(){
@@ -87,12 +147,20 @@ function setQuantity(key,qty){
  if(!Number.isSafeInteger(amount)||!Number.isSafeInteger(total)||!Number.isSafeInteger(count))return false;
  if(qty===0)cart.delete(key);else cart.set(key,qty);return true;
 }
+function announceCart(message){
+ const outside=document.querySelector('#cart-feedback'),inside=document.querySelector('#cart-dialog-feedback');
+ const target=dialog.open?inside:outside, inactive=dialog.open?outside:inside;
+ inactive.textContent='';
+ target.textContent=message+'. Subtotal '+document.querySelector('#subtotal').textContent+'.';
+}
 function changeQuantity(key,delta){
  if(delta!==1&&delta!==-1&&delta!=='1'&&delta!=='-1')return false;
  orderRows();
  if(!cart.has(key))return false;
  if(!setQuantity(key,cart.get(key)+Number(delta)))return false;
- renderCart(key,delta);return true;
+ const item=parseCartKey(key);
+ renderCart(key,delta);
+ announceCart(item.p.name+', '+item.v.label+(cart.has(key)?': cantidad '+cart.get(key):' eliminado'));return true;
 }
 function orderName(p,v){return (p.category==='hotdog'?v.label+' '+p.name:categoryNames[p.category]+' '+p.name+(p.variants.length>1?' · '+v.label:''))+(p.category==='burger'||p.category==='sandwich'?' + papas fritas':'')}
 function updateCheckout(){
@@ -114,6 +182,7 @@ function addProduct(id,index=selections.has(id)?selections.get(id):0){
  orderRows();
  const key=id+':'+item.index;if(!setQuantity(key,(cart.get(key)||0)+1))return false;renderCart();
  const p=item.p,toast=document.querySelector('#toast');toast.textContent=p.name+' · '+item.v.label+' agregado';toast.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('visible'),2400);
+ announceCart(p.name+', '+item.v.label+' agregado. Cantidad '+cart.get(key));
  document.querySelector('#open-cart').animate?.([{transform:'scale(1)'},{transform:'scale(1.07)'},{transform:'scale(1)'}],{duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:280});
  return true;
 }

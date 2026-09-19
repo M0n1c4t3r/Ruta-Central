@@ -4,8 +4,8 @@ const path = require('node:path');
 // Explicit production allowlist. Never copy the repository recursively.
 const publicFiles = Object.freeze([
   'index.html', 'style.css', 'experience.css', 'menu-data.js', 'app.js',
-  'assets/logo.png', 'assets/burger_hand.jpg', 'assets/burger-layers.png',
-  'assets/italiano-studio.png', 'assets/carta-ruta-central.pdf',
+  'assets/logo.webp', 'assets/burger_hand.jpg', 'assets/burger-layers.webp',
+  'assets/italiano-studio.webp', 'assets/carta-ruta-central.pdf',
   'assets/mini-hamburguesas.webp', 'assets/mini-sandwiches.webp',
   'assets/mini-completos.webp', 'assets/mini-compartir.webp',
   'assets/mini-bebidas.webp',

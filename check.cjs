@@ -150,3 +150,41 @@ for(const id of ['#products','#cart-items']){
  assert(markup.includes('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;'));
 }
 console.log('PASS: 57 products / 155 variants, existing functional checks, catalog validation, invalid indices/keys/quantities, safe totals, notes, slider and escaped catalog HTML.');
+// Phase 3 regression coverage; the previous security and functional tests remain intact.
+const source=fs.readFileSync('app.js','utf8');
+const reorderedContext={...context,menuProducts:[...menuProducts].reverse()};
+vm.createContext(reorderedContext);vm.runInContext(source,reorderedContext);
+const reordered=vm.runInContext('products.map(p=>({id:p.id,html:productThumbnail(p)}))',reorderedContext);
+for(const t of thumbnails)assert.equal(reordered.find(r=>r.id===t.id).html,t.html,'Sprite changed when catalog reordered: '+t.id);
+assert.equal(vm.runInContext('Object.keys(thumbnailMap).length',context),57);
+for(const id of ['cart-feedback','cart-dialog-feedback'])assert(html.includes(`id="${id}" class="sr-only" role="status" aria-live="polite" aria-atomic="true"`));
+assert(html.includes('id="toast" aria-hidden="true"'));
+vm.runInContext('cart.clear()',context);element('#cart').open=false;
+vm.runInContext("addProduct('b-66',0)",context);
+assert(element('#cart-feedback').textContent.includes('agregado. Cantidad 1. Subtotal $5.300'));
+assert.equal(element('#cart-dialog-feedback').textContent,'');
+element('#cart').open=true;
+vm.runInContext("changeQuantity('b-66:0',1)",context);
+assert(element('#cart-dialog-feedback').textContent.includes('cantidad 2. Subtotal $10.600'));
+assert.equal(element('#cart-feedback').textContent,'');
+vm.runInContext("changeQuantity('b-66:0',-1);changeQuantity('b-66:0',-1)",context);
+assert(element('#cart-dialog-feedback').textContent.includes('eliminado. Subtotal $0'));
+const route66=menuProducts.find(p=>p.id==='b-66');
+assert(html.includes(`Simple $${route66.variants[0].price.toLocaleString('es-CL')} · Doble $${route66.variants[1].price.toLocaleString('es-CL')}`));
+const promo=menuProducts.find(p=>p.id==='s-italiano');
+assert.equal(promo.name,'Italiano');assert.equal(promo.variants[0].label,'Churrasco');
+assert(html.includes(`data-quick="${promo.id}"`));
+assert(html.includes(`<strong>$${promo.variants[0].price.toLocaleString('es-CL')}</strong>`));
+const {publicFiles}=require('./build-public.cjs');
+for(const name of ['logo','burger-layers','italiano-studio']){
+ assert(publicFiles.includes(`assets/${name}.webp`));assert(!publicFiles.includes(`assets/${name}.png`));
+ const bytes=fs.readFileSync(`assets/${name}.webp`);
+ assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');
+ assert(bytes.length<fs.statSync(`assets/${name}.png`).size);
+}
+assert(html.includes('fetchpriority="high" width="700" height="700"'));
+assert(html.includes('width="1536" height="1024"'));
+assert(html.includes('Condensed:wght@700;800;900'));
+assert(!html.includes('Condensed:wght@600'));
+assert(fs.readFileSync('style.css','utf8').includes('left:10px;z-index:100;padding:15px'));
+console.log('PASS: Phase 3 stable ID sprites (reversed catalog), cart announcements, promoted prices, optimized allowlist, dimensions and priority.');
