@@ -6,7 +6,8 @@ const { publicFiles } = require('./build-public.cjs');
 
 async function check() {
   const { securityHeaders } = await import(pathToFileURL(path.join(__dirname,'worker.mjs')).href);
-  const base = new URL(process.argv[2] || 'https://ruta-central.roberto-bravo-07.workers.dev/');
+  const base = new URL(process.argv[2] || 'https://rutacentral.cl/');
+  assert.equal(base.origin, 'https://rutacentral.cl', 'Production canonical origin must be https://rutacentral.cl');
   assert.equal(base.protocol, 'https:');
   assert.equal(base.pathname, '/');
   assert(!base.search && !base.hash && !base.username && !base.password);
@@ -45,22 +46,35 @@ async function check() {
     const same = textual
       ? bytes.toString('utf8').replace(/\r\n/g, '\n') === local.toString('utf8').replace(/\r\n/g, '\n')
       : bytes.equals(local);
-    const ok = response.status === 200 && same;
+    const ok = response.status === 200 && same && !response.headers.has('location');
     console.log(`${ok ? 'PASS' : 'FAIL'} ${resource}: ${response.status}; matches artifact: ${same}`);
     if (!ok) failures++;
   }
-  for (const suffix of ['/', '/assets/carta-ruta-central.pdf?phase1=a%20b&x=%26']) {
-    const secure = new URL(suffix, base);
-    const insecure = new URL(secure);
-    insecure.protocol = 'http:';
-    const response = await request(insecure);
-    checkHeaders(response,'HTTP '+suffix);
-    const ok = [301, 308].includes(response.status) && response.headers.get('location') === secure.href;
-    console.log(`${ok ? 'PASS' : 'FAIL'} HTTP ${suffix}: ${response.status}; HTTPS path/query preserved: ${ok}`);
-    if (!ok) failures++;
-    await response.body?.cancel();
+  for (const origin of ['http://rutacentral.cl', 'http://ruta-central.roberto-bravo-07.workers.dev',
+    'https://ruta-central.roberto-bravo-07.workers.dev']) {
+    for (const suffix of ['/', '/assets/carta-ruta-central.pdf?phase1=a%20b&x=%26&x=2', '/?next=%2Fmenu%3Fa%3D1']) {
+      const secure = new URL(suffix, base);
+      const response = await request(origin + suffix);
+      checkHeaders(response, origin + suffix);
+      const ok = response.status === 308 && response.headers.get('location') === secure.href;
+      console.log(`${ok ? 'PASS' : 'FAIL'} ${origin}${suffix}: ${response.status}; canonical path/query preserved: ${ok}`);
+      if (!ok) failures++;
+      await response.body?.cancel();
+      // One explicit hop to the expected canonical URL; never follow an untrusted Location.
+      const canonical = await request(secure);
+      checkHeaders(canonical, secure.href);
+      const relative = secure.pathname === '/' ? 'index.html' : secure.pathname.slice(1);
+      const bytes = Buffer.from(await canonical.arrayBuffer());
+      const local = fs.readFileSync(path.join(__dirname, 'dist', relative));
+      const same = relative.endsWith('.html')
+        ? bytes.toString('utf8').replace(/\r\n/g, '\n') === local.toString('utf8').replace(/\r\n/g, '\n')
+        : bytes.equals(local);
+      const noLoop = canonical.status === 200 && !canonical.headers.has('location') && same;
+      console.log(`${noLoop ? 'PASS' : 'FAIL'} canonical target: ${canonical.status}; matches ASSETS artifact without redirect: ${noLoop}`);
+      if (!noLoop) failures++;
+    }
   }
-  assert.equal(failures, 0, `${failures} public checks failed; Phase 2 is not verified in production`);
-  console.log('PASS: public artifact, HTTPS and Phase 2 security headers.');
+  assert.equal(failures, 0, `${failures} public checks failed; domain migration/security not verified in production`);
+  console.log('PASS: public artifact on rutacentral.cl, HTTP/legacy 308 migration without loops, path/query and Phase 2 security headers.');
 }
 check().catch(error => { console.error(error.message); process.exitCode = 1; });

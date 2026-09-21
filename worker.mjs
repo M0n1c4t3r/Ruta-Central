@@ -29,8 +29,10 @@ export function withSecurityHeaders(response) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.protocol === 'http:') {
+    if (url.protocol === 'http:' || url.hostname !== 'rutacentral.cl') {
       url.protocol = 'https:';
+      url.hostname = 'rutacentral.cl';
+      url.port = '';
       return withSecurityHeaders(Response.redirect(url.href, 308));
     }
     // This binding contains only the generated public artifact, never the repo.
