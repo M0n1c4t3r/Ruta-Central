@@ -39,26 +39,13 @@ header{position:sticky;top:0;z-index:20;transition:box-shadow .25s,background .2
 .mini-layer-2{--top:46%;--bottom:36%;--offset:-4%;--z:3}
 .mini-layer-3{--top:64%;--bottom:19%;--offset:-14%;--z:2}
 .mini-layer-4{--top:81%;--bottom:0%;--offset:-23%;--z:1}
-.mini-shine{position:absolute;inset:-20% -60%;z-index:6;pointer-events:none;background:linear-gradient(110deg,transparent 40%,#fff0 43%,#fff8 50%,#fff0 57%,transparent 60%);transform:translateX(-80%);opacity:0}
-.burger-mini-link:focus-visible .burger-mini{transform:scale(1.12);filter:drop-shadow(0 0 12px #ffc40066)}
-.burger-mini-link:focus-visible .mini-shine{animation:burgerReflection .8s ease-out}
-@keyframes burgerReflection{0%{transform:translateX(-80%);opacity:0}20%{opacity:1}85%{opacity:1}100%{transform:translateX(80%);opacity:0}}
-@media(hover:hover) and (pointer:fine){
- .product:hover{translate:0 -5px;background:#1c2117;box-shadow:inset 3px 0 var(--yellow),0 12px 24px #0004}
- .burger-mini-link:hover .burger-mini{transform:scale(1.12) rotate(-3deg);filter:drop-shadow(0 0 12px #ffc40066)}
- .burger-mini-link:hover .mini-shine{animation:burgerReflection .8s ease-out}
-}
-.burger-mini-link:active .burger-mini{transform:scale(1.08)}
 .menu-mini-wrap{display:flex;align-items:center;gap:16px;margin:10px 0 16px;min-height:104px}
 .menu-mini-control{position:relative;display:block;isolation:isolate;overflow:hidden;flex:0 0 112px;width:112px;height:112px;padding:0;border:1px solid #485033;border-radius:14px;background:#181b14;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;cursor:zoom-in}
 .menu-mini-image{position:absolute;inset:0;background-repeat:no-repeat}
 .menu-mini-control .mini-shine{z-index:2}
 .mini-caption{font-size:12px;color:#bec6ad;line-height:1.5;max-width:175px}
 .mini-caption small,.burger-mini-link small{display:block;color:#929d81;font-size:11px;margin-top:5px}
-.menu-mini-control:focus-visible,.menu-mini-control.is-active{transform:scale(1.12);box-shadow:0 0 18px #ffc40040;border-color:var(--yellow)}
 .menu-mini-control.is-active{cursor:zoom-out}
-.menu-mini-control:focus-visible .mini-shine,.menu-mini-control.is-active .mini-shine{animation:burgerReflection .85s ease-out}
-@media(hover:hover) and (pointer:fine){.menu-mini-control:hover{transform:scale(1.12) rotate(-2deg);box-shadow:0 0 18px #ffc40040;border-color:var(--yellow)}.menu-mini-control:hover .mini-shine{animation:burgerReflection .85s ease-out}}
 @media(max-width:650px){.menu-mini-control{flex-basis:100px;width:100px;height:100px}.mini-caption{font-size:13px}.mini-caption small,.burger-mini-link small{font-size:12px}.menu-mini-wrap{gap:18px}}
 @media(prefers-reduced-motion:reduce){.menu-mini-control{transition:none}.menu-mini-control:hover,.menu-mini-control:focus-visible,.menu-mini-control.is-active{transform:none}.menu-mini-control .mini-shine{animation:none!important}}
 @media(prefers-reduced-motion:reduce){.road-track,.burger-mini-link .mini-shine{animation:none!important}.burger-mini,.product{transition:none}.product:hover{translate:none}.burger-mini-link:hover .burger-mini,.burger-mini-link:focus-visible .burger-mini,.burger-mini-link:active .burger-mini{transform:none}.ticker-toggle{display:none}}
@@ -140,3 +127,222 @@ dialog :focus-visible{scroll-margin-block:100px 24px}
  .quantity button,.icon-button{min-width:44px;min-height:44px}
  .experience-controls input{min-height:44px}
 }
+
+/* Phase 4 — Street Food Premium. Deliberate surfaces, shared alignment,
+   restrained movement. No catalog, cart or image-content changes. */
+.topline{padding:8px var(--gutter);font-size:10px;letter-spacing:1.2px}
+header{height:84px;padding:0 var(--gutter);gap:24px}
+header.scrolled{background:var(--black);box-shadow:none;border-bottom-color:#646559}
+header .brand img{width:52px;height:52px}
+header .brand span{font-size:24px}header .brand small{font-size:9px;letter-spacing:2.4px}
+header nav a{display:flex;align-items:center;min-height:44px;border-bottom:2px solid transparent;transition:border-color var(--motion-micro),color var(--motion-micro)}
+header nav a:hover{border-bottom-color:var(--yellow)}
+.cart-trigger{border-radius:var(--radius);border-color:#6d6e63;min-height:48px;font-weight:600}
+.cart-trigger:hover{background:var(--surface-elevated)}
+.cart-trigger span{border-radius:var(--radius);font-variant-numeric:tabular-nums}
+.hero{grid-template-columns:1fr 1fr;min-height:0;padding:32px var(--gutter) 40px;gap:var(--space-5);max-width:var(--content-width)}
+.hero-copy{padding:24px 0 0;display:flex;flex-direction:column;align-items:flex-start}
+.hero h1{font-size:clamp(72px,8.8vw,136px);line-height:.9;letter-spacing:-1.8px;margin-bottom:28px}
+.hero .eyebrow{font-size:11px;letter-spacing:1.6px;margin-bottom:28px}
+.hero .lede{max-width:380px;color:var(--muted);line-height:1.7}
+.hero-bottom{width:100%;margin-top:auto;padding-top:32px;color:var(--muted)}
+.mini-route{border-radius:2px 2px 12px 12px;border-color:#76786b}
+.hero-image{margin:0;min-height:620px;border-radius:var(--radius)}
+.hero-image>img{object-position:52% 50%;filter:contrast(1.04) saturate(.93)}
+.image-top{top:24px;right:24px;font-size:32px;transform:none;text-shadow:0 2px 8px #0008}
+.photo-label{left:24px;right:24px;bottom:24px;padding-top:16px;border-top:1px solid #ffffff70;font-size:10px;letter-spacing:1.5px}
+.ticker-shell .road-band{padding:12px 0;font-size:22px;letter-spacing:1.3px;margin-right:60px}
+.road-group{gap:48px;padding-right:48px}.road-track{animation-duration:38s}
+.road-band b{font-size:17px}.ticker-toggle{border-radius:var(--radius);border-color:#11121080}
+.ticker-toggle:focus-visible{outline-color:var(--black)}
+.ingredient-section{gap:var(--space-6);grid-template-columns:1fr 1fr}
+.ingredient-copy>p:not(.eyebrow){max-width:410px;color:var(--muted)}
+.ingredient-price{border-top:1px solid var(--line);padding-top:24px;margin:32px 0}
+.ingredient-price span{font-size:11px;color:var(--muted)}
+.ingredient-price strong{font-family:'Barlow Condensed',Impact,sans-serif;font-size:28px;line-height:1.3;font-weight:700}
+.ingredient-section .burger-experience{min-height:590px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);justify-content:flex-start}
+.experience-top{position:relative;inset:auto;margin:24px;padding-bottom:16px;border-bottom:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:1.3px}
+.burger-stage{width:min(100%,440px);margin:0 auto}
+.ingredient-art{filter:contrast(1.03) saturate(.94) drop-shadow(0 6px 8px #0005)}
+.ingredient-layer{transition-duration:var(--motion-editorial)}
+.ingredient-label{background:var(--black);border-color:#676448;font-size:10px}
+.experience-controls{margin-top:auto;padding:0 24px 36px;max-width:390px}
+.experience-controls label,.experience-controls small,.illustrative{color:var(--muted)}
+.experience-controls button{min-height:48px}.experience-controls input{min-height:44px}
+.experience-controls small{font-size:12px}.illustrative{font-size:11px}
+.menu-section{background:var(--black);color:var(--paper)}
+.menu-section em{color:var(--yellow)}
+.menu-section .section-heading{padding-bottom:32px;border-bottom:2px solid var(--yellow);margin-bottom:24px}
+.menu-section .eyebrow{color:var(--muted)}
+.menu-section .text-link:hover{color:var(--muted)}
+.menu-toolbar{gap:8px}.filters{flex-wrap:wrap;overflow:visible;gap:8px;padding:4px 0}
+.filters button{color:var(--paper);border-color:#686a5f;background:transparent;font-weight:500;border-radius:var(--radius);padding:12px 17px;transition:background var(--motion-micro),border-color var(--motion-micro)}
+.filters button:hover{border-color:var(--yellow);background:var(--surface-elevated)}
+.filters button.selected{background:var(--yellow);border-color:var(--yellow);color:var(--black)}
+.search-label{color:var(--muted);font-size:13px;margin-top:16px;gap:24px}
+.search-label input{background:var(--surface);border-color:#727466;color:var(--paper);width:360px;border-radius:var(--radius);min-height:48px}
+.search-label input::placeholder{color:var(--muted)}
+.category-summary{color:var(--muted);margin-top:24px;gap:24px}
+.category-summary span{font-variant-numeric:tabular-nums;font-weight:600;color:var(--yellow)}
+.menu-grid{gap:0 var(--space-5)}
+.product{grid-template-columns:38px minmax(0,1fr);gap:16px;padding:32px 0;border-radius:0;animation-duration:var(--motion-component);transition:background var(--motion-micro)}
+.product:hover,.product:focus-within{translate:none;background:transparent;box-shadow:none}
+.route-number{color:var(--yellow);font-size:23px;line-height:1.3;padding-top:0}
+.product-category{color:var(--yellow);font-size:11px;letter-spacing:1.5px}
+.product h3{font-size:34px;line-height:1.05;margin-bottom:12px}
+.product p{font-size:15px;line-height:1.65;color:var(--muted);margin-bottom:12px}
+.included{color:var(--yellow);font-size:12px;margin:8px 0 20px}
+.menu-mini-wrap,.burger-mini-link{margin:4px 0 20px;gap:20px;min-height:112px}
+.menu-mini-control{border-radius:var(--radius);border-color:#7c7c68;background:var(--surface);transition:transform var(--motion-component),border-color var(--motion-micro)}
+.mini-caption,.burger-mini-link{color:var(--paper);font-size:12px;line-height:1.5}
+.mini-caption small,.burger-mini-link small{color:var(--muted);font-size:11px}
+.burger-mini{width:112px;height:112px;border-radius:var(--radius);background:var(--surface);filter:none;transition:transform var(--motion-component)}
+.mini-shine{display:none}
+.menu-mini-control:hover,.menu-mini-control:focus-visible,.menu-mini-control.is-active{transform:scale(1.04);box-shadow:none;border-color:var(--yellow)}
+.burger-mini-link:hover .burger-mini,.burger-mini-link:focus-visible .burger-mini,.burger-mini-link:active .burger-mini{transform:scale(1.04);filter:none}
+.menu-mini-control.is-active{transform:scale(1.1)}
+.variant-label{color:var(--muted);font-size:12px}
+.product select{background:var(--surface);color:var(--paper);border-color:#727466;border-radius:var(--radius);max-width:none;min-height:48px}
+.size-options{gap:24px}.size-option span{color:var(--muted);font-size:14px;min-height:48px;padding:8px 4px}
+.size-option input:checked+span{color:var(--yellow);border-bottom-color:var(--yellow)}
+.product-bottom{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.product strong{font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.product .add-button{border:1px solid #b28a00;border-radius:var(--radius);background:var(--yellow);color:var(--black);min-height:48px;min-width:112px;transition:background var(--motion-micro)}
+.product .add-button:hover{background:#ffda52;border-color:var(--black)}
+.product .add-button span{font-size:13px;font-weight:700}
+.menu-note{color:var(--muted);border-top:1px solid var(--line);padding-top:24px}
+.menu-section :where(a,button,input,select):focus-visible,.menu-section .size-option input:focus-visible+span{outline-color:var(--yellow)}
+.sharing{background:var(--surface);grid-template-columns:1fr 1fr;gap:var(--space-5);padding:var(--section-space) var(--gutter);border-bottom:1px solid var(--line)}
+.sharing h2{font-size:clamp(44px,5.5vw,80px)}
+.sharing-copy>p:not(.eyebrow){color:var(--muted);max-width:390px}
+.combo-bottom{gap:24px;border-top:1px solid #55564a;padding-top:24px}
+.combo-bottom small{font-size:11px;line-height:1.5;color:var(--muted)}
+.combo-bottom strong{font-size:56px;line-height:1.1}
+.promo-figure{border-radius:var(--radius-panel);min-height:0;height:auto;aspect-ratio:auto;align-self:center;background:var(--black)}
+.promo-figure img{display:block;width:100%;height:auto;aspect-ratio:3 / 2;object-fit:contain;object-position:center;transition:none}
+.promo-figure:hover img{transform:none}
+.promo-figure figcaption{font-size:11px;background:var(--black);color:var(--paper);padding:8px 12px;bottom:16px;right:16px}
+.scroll-reveal,.scroll-reveal:not(.in-view){opacity:1;transform:none;transition:none}
+.location h2{font-size:clamp(38px,5.7vw,82px)}
+.location .eyebrow,.location-details small{color:var(--muted)}
+.location-details{gap:var(--space-5);margin-top:48px;padding-top:32px}
+.location-details>div{min-width:0}.location-details p{line-height:1.7}
+footer{max-width:calc(var(--content-width) - 2 * var(--gutter));margin:0 auto;padding:32px 0 40px}
+footer .brand img{width:48px;height:48px}footer>a:last-child{min-height:44px;display:flex;align-items:center}
+dialog{width:490px;padding:32px;background:var(--surface);border-left:1px solid var(--line)}
+dialog::backdrop{background:#000b;backdrop-filter:none}
+.drawer-head{padding-bottom:24px;border-bottom:2px solid var(--yellow);margin-bottom:8px;background:var(--surface)}
+.drawer-head h2{font-size:48px}.icon-button{width:44px;height:44px;border-radius:var(--radius);border-color:#727466}
+.cart-row{padding:24px 0;align-items:center}.cart-row:first-child{border-top:0}
+.cart-row h3{font-size:26px;line-height:1.1}.cart-row p,.cart-row small{color:var(--muted)}
+.quantity{gap:10px;font-variant-numeric:tabular-nums}.quantity button{width:44px;height:44px;border-radius:var(--radius);background:var(--surface-elevated);border-color:#727466}
+.quantity button:hover,.icon-button:hover{border-color:var(--yellow);color:var(--yellow)}
+.cart-total{align-items:center;border-top:2px solid var(--paper);font-size:17px}
+.cart-total strong{font:700 38px/1 'Barlow Condensed',Impact,sans-serif;font-variant-numeric:tabular-nums}
+textarea{background:var(--black);border-color:#727466;border-radius:var(--radius);line-height:1.5}
+.cart-note{font-size:13px;color:var(--muted)}
+.toast{border-radius:var(--radius);box-shadow:none;transition-duration:var(--motion-component)}
+@media(min-width:1600px){header,.topline{padding-inline:max(var(--gutter),calc((100% - 1440px)/2))}}
+@media(max-width:1599px){footer{margin-inline:var(--gutter)}}
+@media(min-width:651px) and (max-width:1100px){
+  .hero{gap:32px}.hero h1{font-size:clamp(66px,8.5vw,94px)}
+  .hero-image{min-height:530px}.hero .eyebrow{font-size:10px;letter-spacing:1px}
+  .hero .button{font-size:11px;padding:16px;gap:16px}
+  .ingredient-section{gap:32px}.ingredient-section .burger-experience{min-height:520px}
+  .ingredient-price strong{font-size:25px}.ingredient-label{font-size:9px;right:4px}
+  .experience-top{margin:18px;font-size:9px;letter-spacing:.8px}
+  .menu-grid{gap:0 32px}.product{grid-template-columns:28px minmax(0,1fr);gap:10px}
+  .route-number{font-size:18px}.product h3{font-size:30px}.menu-mini-wrap,.burger-mini-link{gap:12px}
+  .menu-mini-control{flex-basis:96px;width:96px;height:96px}.burger-mini{width:96px;height:96px}
+  .sharing{gap:32px}.promo-figure{min-height:0}
+}
+@media(max-width:650px){
+  html{scroll-padding-top:148px}
+  .topline{font-size:9px;letter-spacing:.5px;padding:8px var(--gutter)}
+  header{height:auto;padding:12px var(--gutter) 4px;gap:8px}
+  header .brand{gap:8px}header .brand img{width:40px;height:40px}
+  header .brand span{font-size:21px}header .brand small{font-size:8px;letter-spacing:1.7px}
+  header nav{gap:8px;padding-top:4px}header nav a{font-size:13px}
+  .cart-trigger{padding:8px 10px;min-height:44px;font-size:12px}.cart-trigger span{margin-left:8px}
+  .hero{grid-template-columns:1fr;padding:28px var(--gutter) 24px;gap:24px}
+  .hero-copy{padding:0}.hero .eyebrow{font-size:10px;letter-spacing:1px;margin-bottom:20px}
+  .hero h1{font-size:clamp(64px,18vw,100px);line-height:.91;margin-bottom:20px;letter-spacing:-1px}
+  .hero .lede{font-size:15px;line-height:1.65;max-width:350px;margin-bottom:20px}
+  .hero .button{min-height:48px;padding:14px 18px;font-size:12px;gap:24px}
+  .hero-bottom{padding-top:20px;margin-top:0;font-size:9px;letter-spacing:1px}
+  .hero-image{min-height:0;aspect-ratio:1.12;max-height:none}
+  .image-top{font-size:27px;top:16px;right:16px}.photo-label{left:16px;right:16px;bottom:16px;font-size:9px;padding-top:12px}
+  .ticker-shell .road-band{font-size:20px;padding:13px 0}.road-group{gap:28px;padding-right:28px}
+  .ingredient-section{grid-template-columns:1fr;gap:32px}
+  .ingredient-copy h2,.sharing h2{font-size:clamp(38px,10.5vw,56px)}
+  .ingredient-copy>p:not(.eyebrow){font-size:15px;margin:24px 0}
+  .ingredient-price{margin:24px 0;padding-top:20px}.ingredient-price strong{font-size:26px}
+  .ingredient-section .burger-experience{min-height:0}.experience-top{margin:20px 16px;font-size:9px}
+  .burger-stage{margin:0 auto}.experience-controls{padding:0 20px 36px}
+  .ingredient-label{font-size:10px}.illustrative{font-size:11px}
+  .menu-section .section-heading{padding-bottom:24px;margin-bottom:20px}
+  .menu-section .section-heading .text-link{margin-top:16px;display:inline-flex}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .filters button{font-size:13px;padding:10px 8px;white-space:normal;line-height:1.3;min-height:46px}
+  .search-label{font-size:13px;margin-top:16px}.search-label input{width:100%;font-size:16px}
+  .category-summary{gap:16px;font-size:12px;margin-top:20px}
+  .menu-grid{grid-template-columns:1fr}.product{grid-template-columns:1fr;gap:0;padding:28px 0}
+  .product h3{font-size:32px}.product p{font-size:16px}.product-category{font-size:11px}
+  .menu-mini-control{flex-basis:104px;width:104px;height:104px}.burger-mini{width:104px;height:104px}
+  .mini-caption small,.burger-mini-link small{font-size:12px}.mini-caption{font-size:13px}
+  .product select{font-size:16px}.variant-label{font-size:14px}.size-option span{font-size:16px}
+  .product .add-button span{font-size:14px}.product strong{font-size:36px}
+  .sharing{grid-template-columns:1fr;gap:32px}.sharing-copy>p:not(.eyebrow){font-size:15px}
+  .combo-bottom{gap:20px}.combo-bottom strong{font-size:48px}
+  .promo-figure{min-height:0;aspect-ratio:auto}.promo-figure figcaption{font-size:12px;bottom:12px;right:12px}
+  .location h2{font-size:clamp(36px,9.6vw,54px);line-height:1.03}
+  .location-details{grid-template-columns:1fr;gap:24px;margin-top:32px;padding-top:24px}
+  .location-details>div+div{padding-top:24px}.location-details p{font-size:15px}
+  footer{padding:28px 0;gap:16px}footer .brand{width:100%}
+  dialog{width:100%;padding:24px 20px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  .drawer-head{top:-24px;padding:16px 0 20px}.drawer-head h2{font-size:44px}
+  .cart-row{gap:16px}.quantity{gap:14px}.cart-note{font-size:14px}
+  :where(a,button,input,select,textarea):focus-visible{scroll-margin-top:148px}
+}
+@media(max-width:360px){
+  header .brand img{width:34px;height:34px}header .brand span{font-size:18px}
+  header .brand small{letter-spacing:1px;font-size:7px}.cart-trigger{padding:8px}
+  .ingredient-price strong{font-size:24px}.hero .eyebrow{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .product{animation:none}.road-track{animation:none!important}
+  .menu-mini-control:hover,.menu-mini-control:focus-visible,.menu-mini-control.is-active,
+  .burger-mini-link:hover .burger-mini,.burger-mini-link:focus-visible .burger-mini,
+  .burger-mini-link:active .burger-mini,.button:active{transform:none}
+}
+
+/* Revision from owner review: dark menu, yellow route signs and rounded edges. */
+.hero-image,.ingredient-section .burger-experience{border-radius:var(--radius-panel)}
+.product{border-radius:16px}
+.cart-trigger span{border-radius:50%}
+.product strong,.combo-bottom strong,.ingredient-price strong{color:var(--yellow)}
+.menu-section .eyebrow,.location .eyebrow{color:var(--yellow)}
+.ingredient-copy>.eyebrow,.section-heading>div>.eyebrow,.sharing-copy>.eyebrow,.location>div>.eyebrow{
+  display:inline-flex;max-width:100%;padding:9px 14px;border:1px solid #ffc40080;
+  border-radius:8px;background:#ffc4000a;color:var(--yellow);gap:12px;
+  font-family:'Barlow Condensed',Impact,sans-serif;font-size:14px;letter-spacing:1.3px;
+}
+.ingredient-copy>.eyebrow::after,.section-heading>div>.eyebrow::after,.sharing-copy>.eyebrow::after,.location>div>.eyebrow::after{
+  content:'';width:9px;height:9px;flex:0 0 9px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);
+}
+.mini-route{color:var(--yellow);border-color:var(--yellow);border-radius:8px 8px 16px 16px}
+.promo-figure figcaption{position:static;display:block;text-align:right;background:var(--black);padding:10px 16px;color:var(--muted)}
+.headline-line{display:inline-block}
+@keyframes routeHeadline{from{opacity:0;transform:translateY(18px) skewY(2deg)}to{opacity:1;transform:none}}
+@keyframes routeAccent{from{transform:translateY(14px);opacity:.35}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:no-preference){
+  .headline-line{animation:routeHeadline 650ms cubic-bezier(.2,.7,.2,1) both}
+  .headline-line:nth-of-type(2){animation-delay:120ms}
+  em.headline-line{animation-delay:240ms}
+  .button span{transition:transform var(--motion-component)}
+  .button:hover span{transform:translate(2px,-2px)}
+  @supports(animation-timeline:view()){
+    .section h2 em{display:inline-block;animation:routeAccent linear both;animation-timeline:view();animation-range:entry 0% entry 90%}
+  }
+}
+@media(prefers-reduced-motion:reduce){.headline-line,.section h2 em{animation:none!important;transform:none!important;opacity:1!important}}
