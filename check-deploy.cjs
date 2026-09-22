@@ -6,6 +6,7 @@ const { build, publicFiles, inventory } = require('./build-public.cjs');
 
 async function check() {
   const output = build();
+  require('./check-seo.cjs').checkSEO(output);
   assert.deepEqual(inventory(output), [...publicFiles].sort());
   for (const relative of publicFiles) {
     assert(fs.readFileSync(path.join(output, relative)).equals(fs.readFileSync(path.join(__dirname, relative))), relative);
@@ -13,7 +14,7 @@ async function check() {
   const html = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
   assert(!html.includes('### Comentario de Referencia ###'));
   for (const [, ref] of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
-    if (!ref.startsWith('http') && !ref.startsWith('#')) assert(publicFiles.includes(ref), `Missing HTML asset: ${ref}`);
+    if (!ref.startsWith('http') && !ref.startsWith('#')) assert(publicFiles.includes(ref.replace(/^\//, '')), `Missing HTML asset: ${ref}`);
   }
   for (const css of ['style.css', 'experience.css']) {
     for (const [, ref] of fs.readFileSync(path.join(output, css), 'utf8').matchAll(/url\(['"]?([^)'"\s]+)['"]?\)/g)) {

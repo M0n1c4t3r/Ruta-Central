@@ -9,6 +9,7 @@ const publicFiles = Object.freeze([
   'assets/mini-hamburguesas.webp', 'assets/mini-sandwiches.webp',
   'assets/mini-completos.webp', 'assets/mini-compartir.webp',
   'assets/mini-bebidas.webp',
+  'robots.txt', 'sitemap.xml', 'assets/favicon.png',
 ]);
 
 function inventory(directory, prefix = '') {

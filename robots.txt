@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rutacentral.cl/sitemap.xml

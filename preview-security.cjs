@@ -8,7 +8,7 @@ const root = path.join(__dirname, 'dist');
 inventory(root);
 const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
   '.css':'text/css; charset=utf-8','.jpg':'image/jpeg','.png':'image/png',
-  '.webp':'image/webp','.pdf':'application/pdf'};
+  '.txt':'text/plain; charset=utf-8','.xml':'application/xml; charset=utf-8','.webp':'image/webp','.pdf':'application/pdf'};
 
 import(pathToFileURL(path.join(__dirname, 'worker.mjs')).href).then(({default:worker}) => {
   const env = { ASSETS: { fetch: async request => {
@@ -20,14 +20,15 @@ import(pathToFileURL(path.join(__dirname, 'worker.mjs')).href).then(({default:wo
       headers:{'Content-Type':types[path.extname(file)],'Cache-Control':'no-store'},
     });
   } } };
+  const port = Number(process.env.PORT || 4175);
   http.createServer(async(req,res) => {
     try {
       // Loopback HTTP is used only to inspect the final HTTPS response in a browser.
       // Redirect behavior is tested separately in check-deploy.cjs.
-      const url=new URL(req.url,'https://127.0.0.1:4175');
+      const url=new URL(req.url,'https://rutacentral.cl');
       const response=await worker.fetch(new Request(url,{method:req.method}),env);
       res.writeHead(response.status,Object.fromEntries(response.headers));
       res.end(Buffer.from(await response.arrayBuffer()));
     } catch { res.writeHead(500);res.end('Preview error'); }
-  }).listen(4175,'127.0.0.1',()=>console.log('Security preview: http://127.0.0.1:4175'));
+  }).listen(port,'127.0.0.1',()=>console.log(`Security preview: http://127.0.0.1:${port}`));
 }).catch(error=>{console.error(error.message);process.exitCode=1});

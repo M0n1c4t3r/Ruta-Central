@@ -5,6 +5,7 @@ const { pathToFileURL } = require('node:url');
 const { publicFiles } = require('./build-public.cjs');
 
 async function check() {
+  require('./check-seo.cjs').checkSEO(path.join(__dirname, 'dist'));
   const { securityHeaders } = await import(pathToFileURL(path.join(__dirname,'worker.mjs')).href);
   const base = new URL(process.argv[2] || 'https://rutacentral.cl/');
   assert.equal(base.origin, 'https://rutacentral.cl', 'Production canonical origin must be https://rutacentral.cl');
@@ -15,7 +16,7 @@ async function check() {
     '/assets/GENERACION.md', '/assets/REFERENCIAS-MINIATURAS.md',
     '/assets/prompts-miniaturas.json', '/prompts-miniaturas.json', '/menu-export.json',
     '/build-public.cjs', '/check-deploy.cjs', '/check-live.cjs', '/worker.mjs', '/wrangler.json',
-    '/preview-security.cjs', '/SECURITY-PHASE2.md'];
+    '/preview-security.cjs', '/SECURITY-PHASE2.md', '/check-seo.cjs'];
   let failures = 0;
   function checkHeaders(response, resource) {
     for (const [name,value] of Object.entries(securityHeaders)) {
@@ -42,11 +43,14 @@ async function check() {
     checkHeaders(response,resource);
     const bytes = Buffer.from(await response.arrayBuffer());
     const local = fs.readFileSync(path.join(__dirname, 'dist', relative));
-    const textual = /\.(html|css|js)$/.test(relative);
+    const textual = /\.(html|css|js|txt|xml)$/.test(relative);
     const same = textual
       ? bytes.toString('utf8').replace(/\r\n/g, '\n') === local.toString('utf8').replace(/\r\n/g, '\n')
       : bytes.equals(local);
-    const ok = response.status === 200 && same && !response.headers.has('location');
+    const expectedMime = {'robots.txt':['text/plain'], 'sitemap.xml':['application/xml','text/xml'], 'assets/favicon.png':['image/png']}[relative];
+    const mimeOK = !expectedMime || expectedMime.includes((response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase());
+    if (!mimeOK) console.log(`FAIL ${resource}: inappropriate MIME`);
+    const ok = mimeOK && response.status === 200 && same && !response.headers.has('location');
     console.log(`${ok ? 'PASS' : 'FAIL'} ${resource}: ${response.status}; matches artifact: ${same}`);
     if (!ok) failures++;
   }

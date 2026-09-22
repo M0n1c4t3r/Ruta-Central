@@ -64,7 +64,7 @@ for(const category of ['burger','sandwich','hotdog','share','drink']){
  assert.equal(new Set(cards.map(t=>t.html.match(/background-position:[^\"]+/)[0])).size,cards.length);
 }
 const html=fs.readFileSync('index.html','utf8');
-for(const [,ref] of html.matchAll(/(?:src|href)="([^"]+)"/g)){if(!ref.startsWith('http')&&!ref.startsWith('#'))assert(fs.existsSync(ref),'Missing asset '+ref)}
+for(const [,ref] of html.matchAll(/(?:src|href)="([^"]+)"/g)){if(!ref.startsWith('http')&&!ref.startsWith('#'))assert(fs.existsSync(ref.replace(/^\//, '')),'Missing asset '+ref)}
 assert(!html.includes('23000'));assert(!html.includes('promo4.jpg'));
 assert(html.match(/<section class="hero"[\s\S]*?burger_hand.jpg[\s\S]*?<\/section>/));
 // Defensive boundary tests: malformed data and corrupt state must not throw.
@@ -188,3 +188,5 @@ assert(html.includes('Condensed:wght@700;800;900'));
 assert(!html.includes('Condensed:wght@600'));
 assert(fs.readFileSync('style.css','utf8').includes('left:10px;z-index:100;padding:15px'));
 console.log('PASS: Phase 3 stable ID sprites (reversed catalog), cart announcements, promoted prices, optimized allowlist, dimensions and priority.');
+
+require('./check-seo.cjs').checkSEO(__dirname);
